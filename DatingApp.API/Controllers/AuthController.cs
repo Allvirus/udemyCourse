@@ -50,7 +50,6 @@ namespace DatingApp.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
-
             //设置生成token
 
             //登陆认证
