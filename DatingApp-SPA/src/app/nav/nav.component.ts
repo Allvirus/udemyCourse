@@ -44,6 +44,6 @@ export class NavComponent implements OnInit {
     localStorage.removeItem('token');
     this.alertify.message('登出');
     console.log('登出');
-    this.router.navigate(['/homr']);
+    this.router.navigate(['/home']);
   }
 }
