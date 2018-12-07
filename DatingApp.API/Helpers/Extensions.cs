@@ -1,5 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace DatingApp.API.Helpers
 {
@@ -12,6 +14,19 @@ namespace DatingApp.API.Helpers
             response.Headers.Add("Application-Error", message);
             response.Headers.Add("Access-Control-Expose-Headers", "Application-Error");
             response.Headers.Add("Access-Control-Allow-Origin", "*");
+        }
+
+        //添加自定义分页请求头
+        public static void AddPagination(this HttpResponse response, int currentPage, int itemsPerPage, int totalItems, int totalPages)
+        {
+            var paginationHeader = new PaginationHeader(currentPage, itemsPerPage, totalItems, totalPages);
+
+            //json 大驼峰转换小驼峰命令
+            var camelCaseFormatter = new JsonSerializerSettings();
+            camelCaseFormatter.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            response.Headers.Add("Pagination", JsonConvert.SerializeObject(paginationHeader, camelCaseFormatter));
+
+            response.Headers.Add("Access-Control-Expose-Headers", "Pagination");
         }
 
         //添加自定义计算年龄方法

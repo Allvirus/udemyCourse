@@ -5,7 +5,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   BsDropdownModule,
   TabsModule,
-  BsDatepickerModule
+  BsDatepickerModule,
+  PaginationModule,
+  ButtonsModule
 } from 'ngx-bootstrap';
 
 // 引用中文语言包
@@ -68,6 +70,8 @@ export function tokenGetter() {
     BsDropdownModule.forRoot(),
     BsDatepickerModule.forRoot(),
     TabsModule.forRoot(),
+    PaginationModule.forRoot(),
+    ButtonsModule.forRoot(),
 
     // 导入全局路由
     RouterModule.forRoot(appRoute),
