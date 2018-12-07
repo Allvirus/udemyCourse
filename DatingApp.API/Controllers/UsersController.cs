@@ -7,9 +7,11 @@ using DatingApp.API.Dtos;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System;
+using DatingApp.API.Helpers;
 
 namespace DatingApp.API.Controllers
 {
+    [ServiceFilter(typeof(LogUserActivity))]
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -48,7 +50,9 @@ namespace DatingApp.API.Controllers
         {
             if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
+
             var userFromRepo = await _repo.GetUser(id);
+
             _mapper.Map(userForUpdateDto, userFromRepo);
             if (await _repo.SaveAll())
                 return NoContent();
