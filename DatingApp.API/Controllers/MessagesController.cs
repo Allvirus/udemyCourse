@@ -26,21 +26,23 @@ namespace DatingApp.API.Controllers
             _repo = repo;
         }
 
-        [HttpGet("{id}",Name="GetMessage")]
-        public async Task<IActionResult> GetMessage(int userId,int id){
+        [HttpGet("{id}", Name = "GetMessage")]
+        public async Task<IActionResult> GetMessage(int userId, int id)
+        {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
             var messageFromRepo = await _repo.GetMessage(id);
 
-            if(messageFromRepo==null)
+            if (messageFromRepo == null)
                 return NotFound();
 
             return Ok(messageFromRepo);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMessagesForUser(int userId,[FromQuery]MessageParams messageParams){
+        public async Task<IActionResult> GetMessagesForUser(int userId, [FromQuery]MessageParams messageParams)
+        {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
@@ -50,13 +52,27 @@ namespace DatingApp.API.Controllers
 
             var messages = _mapper.Map<IEnumerable<MessageToReturnDto>>(messageFromRepo);
 
-            Response.AddPagination(messageFromRepo.CurrentPage,messageFromRepo.PageSize,messageFromRepo.TotalCount,messageFromRepo.TotalPages);
-            
+            Response.AddPagination(messageFromRepo.CurrentPage, messageFromRepo.PageSize, messageFromRepo.TotalCount, messageFromRepo.TotalPages);
+
             return Ok(messages);
         }
 
+        [HttpGet("thread/{recipientId}")]
+        public async Task<IActionResult> GetMessageThread(int userId, int recipientId)
+        {
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+
+            var messageFromRepo = await _repo.GetMessageThread(userId, recipientId);
+
+            var messageThread = _mapper.Map<IEnumerable<MessageToReturnDto>>(messageFromRepo);
+
+            return Ok(messageThread);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> CreateMessage(int userId,MessageForCreationDto messageForCreationDto){
+        public async Task<IActionResult> CreateMessage(int userId, MessageForCreationDto messageForCreationDto)
+        {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
@@ -64,7 +80,7 @@ namespace DatingApp.API.Controllers
 
             var recipient = await _repo.GetUser(messageForCreationDto.RecipientId);
 
-            if(recipient == null)
+            if (recipient == null)
                 return BadRequest("未能找到用户");
 
             var message = _mapper.Map<Message>(messageForCreationDto);
@@ -73,9 +89,9 @@ namespace DatingApp.API.Controllers
 
             var messageToReTurn = _mapper.Map<MessageForCreationDto>(message);
 
-            if(await _repo.SaveAll())
-                return CreatedAtRoute("GetMessage",new {id = message.Id},messageToReTurn);
-            
+            if (await _repo.SaveAll())
+                return CreatedAtRoute("GetMessage", new { id = message.Id }, messageToReTurn);
+
             throw new Exception("发送信息失败，未能保存");
 
         }
