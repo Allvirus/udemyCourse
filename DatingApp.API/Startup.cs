@@ -46,10 +46,15 @@ namespace DatingApp.API
             services.AddCors();
             //添加cloudinary配置 读取
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+            //注册automapper服务
             services.AddAutoMapper();
+            //注册seed种子方法
             services.AddTransient<Seed>();
+            //注册权限仓库接口和实现
             services.AddScoped<IAuthRepository, AuthRepository>();
+            //注册App仓库接口和实现
             services.AddScoped<IDatingRepository, DatingRepository>();
+            //注册jwt权限认证服务
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -62,8 +67,9 @@ namespace DatingApp.API
                     ValidateAudience = false
                 };
             });
+            //注册用户在线服务
             services.AddScoped<LogUserActivity>();
-
+            //注册swagger服务
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
